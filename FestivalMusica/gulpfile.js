@@ -1,33 +1,30 @@
-const {src, dest, watch} = require("gulp");
+const { src, dest, watch, parallel, series } = require("gulp");
 const sass = require("gulp-sass")(require('sass'));
 const plumber = require('gulp-plumber');
 
-function css (done){
-    //Identificar el archivo sass
-
-    //Copilarlo
-
-    //Guardarla en el disco duro
-
-    src('src/scss/**/*.scss')
+function css() {
+    return src('src/scss/**/*.scss')
         .pipe(plumber())
         .pipe(sass())
-        .pipe(dest("build/css"))
-
-
-    done();
+        .pipe(dest("build/css"));
 }
 
-function imagenes(){
-
-
-}
-function dev(done){
-    watch("src/scss/**/*.scss", css)
-
-    done();
+function imagenes() {
+    // Agrega la lógica para procesar imágenes aquí
 }
 
+function dev() {
+    watch("src/scss/**/*.scss", css);
+    watch("src/js/**/*.js", javascript);
+}
 
-exports.css =css;
-exports.dev = dev;
+function javascript() {
+    return src('src/js/**/*.js')
+        .pipe(dest('build/js'));
+}
+
+exports.css = css;
+exports.js = javascript;
+exports.dev = series(css, parallel(dev, javascript));
+
+exports.default = dev; // Establece dev como la tarea por defecto
